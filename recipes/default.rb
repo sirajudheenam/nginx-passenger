@@ -33,7 +33,7 @@ case node['platform']
       end
 
   when 'redhat', 'centos'
-    %w(epel-release curl gcc-c++ make ruby yum-utils pygpgme).each do |pkg|
+    %w(epel-release curl gcc-c++ make ruby yum-utils pygpgme policycoreutils selinux-policy libxslt GeoIP perl openssl gperftools).each do |pkg|
       package pkg
     end
     %w(fontconfig fontpackages-filesystem gd libX11 libX11-common libXau libXpm libpng libxcb rubygem-rack rubygem-rake).each do |pkg|
@@ -69,11 +69,18 @@ case node['platform']
       enabled true
       action :create
     end
-    %w(nginx passenger).each do |pkg|
-      yum_package pkg do
-        options '--disablerepo=* --enablerepo=passenger'
-      end
+    # %w(nginx passenger).each do |pkg|
+    #   yum_package pkg do
+    #     options '--disablerepo=* --enablerepo=passenger'
+    #   end
+    # end
+    package 'nginx' do
+      options '--disablerepo=* --enablerepo=passenger'
     end
+    package 'passenger' do
+      options '--disablerepo=* --enablerepo=passenger'
+    end
+
     template '/etc/nginx/conf.d/passenger.conf' do
       source 'passenger.conf.erb'
       mode '0644'
